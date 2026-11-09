@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Left hardware buttons -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31.8,41 L30,42.5 C29.7,45.5 29.7,48.5 30,51.5 L32,53 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32.1,55.5 L30.4,57 C30.1,60 30.1,63 30.4,66 L32.3,67.5 Z" />
+
+    <!-- Right hardware buttons -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M76.2,41 L78,42.5 C78.3,45.5 78.3,48.5 78,51.5 L76,53 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M75.9,55.5 L77.6,57 C77.9,60 77.9,63 77.6,66 L75.7,67.5 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M75.6,69 L77,70.2 C77.2,72.5 77.2,75 77,77.2 L75.5,78.5 Z" />
+
+    <!-- Karoo Outer Shell outline -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M39,19.8 C49,18.7 59,18.7 69,19.8 C74,20.4 76.2,23.2 76.5,28.5 L75.5,79.5 C75.2,84.5 72.5,87.2 67.5,87.8 C58.5,88.9 49.5,88.9 40.5,87.8 C35.5,87.2 32.8,84.5 32.5,79.5 L31.5,28.5 C31.8,23.2 34,20.4 39,19.8 Z"
+        android:strokeLineJoin="round"
+        android:strokeWidth="3.5"
+        android:strokeColor="#FFFFFF" />
+
+    <!-- Health Connect heart outline -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M54,59 L46,51 A5.6,5.6 0 1,1 54,43 A5.6,5.6 0 1,1 62,51 Z"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="3.5"
+        android:strokeColor="#FFFFFF" />
+
+    <!-- Telemetry pulse wave -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M40.5,50 L48,50 L51,44.5 L54.5,55.5 L57.5,47.5 L60,50 L67.5,50"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.2"
+        android:strokeColor="#FFFFFF" />
+</vector>

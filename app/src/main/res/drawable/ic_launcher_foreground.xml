@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Drop shadow for Karoo bike computer casing -->
+    <path
+        android:fillColor="#55000000"
+        android:pathData="M39,21.8 C49,20.7 59,20.7 69,21.8 C74,22.4 76.2,25.2 76.5,30.5 L75.5,81.5 C75.2,86.5 72.5,89.2 67.5,89.8 C58.5,90.9 49.5,90.9 40.5,89.8 C35.5,89.2 32.8,86.5 32.5,81.5 L31.5,30.5 C31.8,25.2 34,22.4 39,21.8 Z" />
+
+    <!-- Left hardware buttons (uniform slate metallic color) -->
+    <path
+        android:fillColor="#8C9BAE"
+        android:pathData="M31.8,41 L30,42.5 C29.7,45.5 29.7,48.5 30,51.5 L32,53 Z" />
+    <path
+        android:fillColor="#8C9BAE"
+        android:pathData="M32.1,55.5 L30.4,57 C30.1,60 30.1,63 30.4,66 L32.3,67.5 Z" />
+
+    <!-- Right hardware buttons (uniform slate metallic color) -->
+    <path
+        android:fillColor="#8C9BAE"
+        android:pathData="M76.2,41 L78,42.5 C78.3,45.5 78.3,48.5 78,51.5 L76,53 Z" />
+    <path
+        android:fillColor="#8C9BAE"
+        android:pathData="M75.9,55.5 L77.6,57 C77.9,60 77.9,63 77.6,66 L75.7,67.5 Z" />
+    <path
+        android:fillColor="#8C9BAE"
+        android:pathData="M75.6,69 L77,70.2 C77.2,72.5 77.2,75 77,77.2 L75.5,78.5 Z" />
+
+    <!-- Karoo Outer Shell (authentic Karoo proportions & slate-blue casing) -->
+    <path
+        android:fillColor="#26313E"
+        android:pathData="M39,19.8 C49,18.7 59,18.7 69,19.8 C74,20.4 76.2,23.2 76.5,28.5 L75.5,79.5 C75.2,84.5 72.5,87.2 67.5,87.8 C58.5,88.9 49.5,88.9 40.5,87.8 C35.5,87.2 32.8,84.5 32.5,79.5 L31.5,28.5 C31.8,23.2 34,20.4 39,19.8 Z"
+        android:strokeWidth="1.5"
+        android:strokeColor="#485B73" />
+
+    <!-- Karoo Inner Bezel -->
+    <path
+        android:fillColor="#161D26"
+        android:pathData="M40.5,22.2 C49.5,21.3 58.5,21.3 67.5,22.2 C71.8,22.7 73.7,25 74,29.5 L73.1,78.5 C72.8,82.8 70.6,85 66.5,85.5 C58.2,86.4 49.8,86.4 41.5,85.5 C37.4,85 35.2,82.8 34.9,78.5 L34,29.5 C34.3,25 36.2,22.7 40.5,22.2 Z" />
+
+    <!-- Karoo Dark Display Screen (shifted above bottom chin) -->
+    <path
+        android:fillColor="#0B0F14"
+        android:pathData="M39.6,27 L68.4,27 A1.6,1.6 0 0,1 70,28.6 L70,71.9 A1.6,1.6 0 0,1 68.4,73.5 L39.6,73.5 A1.6,1.6 0 0,1 38,71.9 L38,28.6 A1.6,1.6 0 0,1 39.6,27 Z" />
+
+    <!-- Top telemetry data bar on screen -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M41,32 L67,32"
+        android:strokeWidth="1.2"
+        android:strokeColor="#283545" />
+
+    <!-- Google Health Connect ribbon (Left lobe - Google Blue & Green) -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M54,59 L46,51 A5.6,5.6 0 1,1 54,43"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="4.4">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:endX="43"
+                android:endY="57"
+                android:startX="54"
+                android:startY="41"
+                android:type="linear">
+                <item
+                    android:color="#4285F4"
+                    android:offset="0.0" />
+                <item
+                    android:color="#34A853"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Google Health Connect ribbon (Right lobe - Google Red & Yellow) -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M54,43 A5.6,5.6 0 1,1 62,51 L54,59"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="4.4">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:endX="54"
+                android:endY="59"
+                android:startX="63"
+                android:startY="41"
+                android:type="linear">
+                <item
+                    android:color="#EA4335"
+                    android:offset="0.0" />
+                <item
+                    android:color="#FBBC04"
+                    android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Cycling / Heart Rate telemetry pulse wave across the screen -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M40.5,50 L48,50 L51,44.5 L54.5,55.5 L57.5,47.5 L60,50 L67.5,50"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2.2"
+        android:strokeColor="#FFFFFF" />
+</vector>

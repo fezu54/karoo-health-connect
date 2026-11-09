@@ -1,0 +1,5 @@
+name = "karoo-sram-oauth-proxy"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Configure SRAM_CLIENT_ID and SRAM_CLIENT_SECRET via Cloudflare Dashboard or Wrangler CLI

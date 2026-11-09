@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="108" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1A222C" />
+      <stop offset="100%" stop-color="#0D1117" />
+    </linearGradient>
+
+    <!-- Health Connect Left Lobe (Google Blue to Green) -->
+    <linearGradient id="healthLeft" x1="54" y1="41" x2="43" y2="57" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4285F4" />
+      <stop offset="100%" stop-color="#34A853" />
+    </linearGradient>
+
+    <!-- Health Connect Right Lobe (Google Red to Yellow) -->
+    <linearGradient id="healthRight" x1="63" y1="41" x2="54" y2="59" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#EA4335" />
+      <stop offset="100%" stop-color="#FBBC04" />
+    </linearGradient>
+
+    <!-- Optional corner clip for app store squircle icons -->
+    <clipPath id="squircleClip">
+      <rect x="0" y="0" width="108" height="108" rx="22" ry="22" />
+    </clipPath>
+  </defs>
+
+  <!-- Background layer (with smooth rounded corners for app stores) -->
+  <rect width="108" height="108" rx="22" ry="22" fill="url(#bgGrad)" />
+
+  <g clip-path="url(#squircleClip)">
+    <!-- Elevation contour lines -->
+    <path d="M0,78 Q27,64 54,78 T108,78" fill="none" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="1.2" />
+    <path d="M0,88 Q27,74 54,88 T108,88" fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1.2" />
+    <path d="M0,28 Q27,14 54,28 T108,28" fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1.2" />
+
+    <!-- Drop shadow for Karoo chassis -->
+    <path d="M39,21.8 C49,20.7 59,20.7 69,21.8 C74,22.4 76.2,25.2 76.5,30.5 L75.5,81.5 C75.2,86.5 72.5,89.2 67.5,89.8 C58.5,90.9 49.5,90.9 40.5,89.8 C35.5,89.2 32.8,86.5 32.5,81.5 L31.5,30.5 C31.8,25.2 34,22.4 39,21.8 Z" fill="#000000" fill-opacity="0.33" />
+
+    <!-- Left hardware buttons -->
+    <path d="M31.8,41 L30,42.5 C29.7,45.5 29.7,48.5 30,51.5 L32,53 Z" fill="#8C9BAE" />
+    <path d="M32.1,55.5 L30.4,57 C30.1,60 30.1,63 30.4,66 L32.3,67.5 Z" fill="#8C9BAE" />
+
+    <!-- Right hardware buttons -->
+    <path d="M76.2,41 L78,42.5 C78.3,45.5 78.3,48.5 78,51.5 L76,53 Z" fill="#8C9BAE" />
+    <path d="M75.9,55.5 L77.6,57 C77.9,60 77.9,63 77.6,66 L75.7,67.5 Z" fill="#8C9BAE" />
+    <path d="M75.6,69 L77,70.2 C77.2,72.5 77.2,75 77,77.2 L75.5,78.5 Z" fill="#8C9BAE" />
+
+    <!-- Karoo Outer Shell -->
+    <path d="M39,19.8 C49,18.7 59,18.7 69,19.8 C74,20.4 76.2,23.2 76.5,28.5 L75.5,79.5 C75.2,84.5 72.5,87.2 67.5,87.8 C58.5,88.9 49.5,88.9 40.5,87.8 C35.5,87.2 32.8,84.5 32.5,79.5 L31.5,28.5 C31.8,23.2 34,20.4 39,19.8 Z" fill="#26313E" stroke="#485B73" stroke-width="1.5" />
+
+    <!-- Karoo Inner Bezel -->
+    <path d="M40.5,22.2 C49.5,21.3 58.5,21.3 67.5,22.2 C71.8,22.7 73.7,25 74,29.5 L73.1,78.5 C72.8,82.8 70.6,85 66.5,85.5 C58.2,86.4 49.8,86.4 41.5,85.5 C37.4,85 35.2,82.8 34.9,78.5 L34,29.5 C34.3,25 36.2,22.7 40.5,22.2 Z" fill="#161D26" />
+
+    <!-- Karoo Display Screen -->
+    <rect x="38" y="27" width="32" height="46.5" rx="1.6" fill="#0B0F14" />
+
+    <!-- Top telemetry bar -->
+    <line x1="41" y1="32" x2="67" y2="32" stroke="#283545" stroke-width="1.2" />
+
+    <!-- Health Connect Heart Ribbon Left Lobe -->
+    <path d="M54,59 L46,51 A5.6,5.6 0 1,1 54,43" fill="none" stroke="url(#healthLeft)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Health Connect Heart Ribbon Right Lobe -->
+    <path d="M54,43 A5.6,5.6 0 1,1 62,51 L54,59" fill="none" stroke="url(#healthRight)" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Cycling / Telemetry Pulse Wave -->
+    <path d="M40.5,50 L48,50 L51,44.5 L54.5,55.5 L57.5,47.5 L60,50 L67.5,50" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>
