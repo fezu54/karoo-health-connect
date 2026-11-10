@@ -82,6 +82,22 @@ class SharedPreferencesSyncRepositoryTest : FreeSpec() {
         repository.isRideSynced(firstRideId) shouldBe true
         repository.isRideSynced(secondRideId) shouldBe true
     }
+
+    "should clear synced ride IDs and last sync timestamp when clearSyncHistory executed" {
+        //given
+        val rideId = RideId("ride-to-clear")
+        val timestamp = Instant.parse("2026-11-09T10:00:00Z")
+        repository.markRideSynced(rideId, timestamp)
+        repository.isRideSynced(rideId) shouldBe true
+        repository.getLastSyncTimestamp() shouldBe timestamp
+
+        //when
+        repository.clearSyncHistory()
+
+        //then
+        repository.isRideSynced(rideId) shouldBe false
+        repository.getLastSyncTimestamp() shouldBe null
+    }
 }
 }
 

@@ -1,5 +1,6 @@
 package org.happycode.karoo.health_connect.adapters.healthconnect
 
+import android.util.Log
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.CyclingPedalingCadenceRecord
 import androidx.health.connect.client.records.DistanceRecord
@@ -28,28 +29,45 @@ class AndroidHealthConnectGateway(
     override suspend fun isAvailable(): Boolean = availabilityChecker()
 
     override suspend fun upsertRide(ride: Ride, preferences: SyncPreferences) {
-        val records = mutableListOf<Record>()
-
         val route = when {
             preferences.syncRoute && ride.metrics.route.isNotEmpty() -> createExerciseRoute(ride)
             else -> null
         }
 
-        records.add(
-            ExerciseSessionRecord(
-                startTime = ride.startTime,
-                startZoneOffset = ride.zoneOffset,
-                endTime = ride.endTime,
-                endZoneOffset = ride.zoneOffset,
-                exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
-                title = ride.title,
-                exerciseRoute = route,
-                metadata = Metadata.manualEntry(clientRecordId = "karoo_session_${ride.id.value}"),
-            ),
+        insertSessionRecord(ride, route)
+        insertOptionalMetrics(ride, preferences)
+    }
+
+    private suspend fun insertSessionRecord(ride: Ride, route: ExerciseRoute?) {
+        val sessionRecord = buildSessionRecord(ride, route)
+        runCatching {
+            healthConnectClient.insertRecords(listOf(sessionRecord))
+        }.onFailure { error ->
+            if ((route != null) && (error is SecurityException)) {
+                Log.w(TAG, "Failed to insert session with route, retrying without route: ${error.message}")
+                val fallbackRecord = buildSessionRecord(ride, null)
+                healthConnectClient.insertRecords(listOf(fallbackRecord))
+            } else {
+                throw error
+            }
+        }
+    }
+
+    private fun buildSessionRecord(ride: Ride, route: ExerciseRoute?): ExerciseSessionRecord =
+        ExerciseSessionRecord(
+            startTime = ride.startTime,
+            startZoneOffset = ride.zoneOffset,
+            endTime = ride.endTime,
+            endZoneOffset = ride.zoneOffset,
+            exerciseType = ExerciseSessionRecord.EXERCISE_TYPE_BIKING,
+            title = ride.title,
+            exerciseRoute = route,
+            metadata = Metadata.manualEntry(clientRecordId = "karoo_session_${ride.id.value}"),
         )
 
+    private suspend fun insertOptionalMetrics(ride: Ride, preferences: SyncPreferences) {
         ride.metrics.totalDistanceMeters?.takeIf { it > 0.0 }?.let { distanceMeters ->
-            records.add(
+            insertMetricSafe(
                 DistanceRecord(
                     startTime = ride.startTime,
                     startZoneOffset = ride.zoneOffset,
@@ -58,12 +76,13 @@ class AndroidHealthConnectGateway(
                     distance = Length.meters(distanceMeters),
                     metadata = Metadata.manualEntry(clientRecordId = "karoo_dist_${ride.id.value}"),
                 ),
+                "distance",
             )
         }
 
         if (preferences.syncCalories) {
             ride.metrics.totalCalories?.takeIf { it > 0 }?.let { calories ->
-                records.add(
+                insertMetricSafe(
                     TotalCaloriesBurnedRecord(
                         startTime = ride.startTime,
                         startZoneOffset = ride.zoneOffset,
@@ -72,13 +91,14 @@ class AndroidHealthConnectGateway(
                         energy = Energy.kilocalories(calories.toDouble()),
                         metadata = Metadata.manualEntry(clientRecordId = "karoo_cal_${ride.id.value}"),
                     ),
+                    "calories",
                 )
             }
         }
 
         if (preferences.syncElevation) {
             ride.metrics.totalElevationGainMeters?.takeIf { it > 0.0 }?.let { elevationGain ->
-                records.add(
+                insertMetricSafe(
                     ElevationGainedRecord(
                         startTime = ride.startTime,
                         startZoneOffset = ride.zoneOffset,
@@ -87,6 +107,7 @@ class AndroidHealthConnectGateway(
                         elevation = Length.meters(elevationGain),
                         metadata = Metadata.manualEntry(clientRecordId = "karoo_elev_${ride.id.value}"),
                     ),
+                    "elevation",
                 )
             }
         }
@@ -96,7 +117,7 @@ class AndroidHealthConnectGateway(
                 .filter { (timestamp) -> (timestamp in (ride.startTime..ride.endTime)) }
                 .takeIf { it.isNotEmpty() }
                 ?.let { samples ->
-                    records.add(
+                    insertMetricSafe(
                         HeartRateRecord(
                             startTime = ride.startTime,
                             startZoneOffset = ride.zoneOffset,
@@ -107,6 +128,7 @@ class AndroidHealthConnectGateway(
                             },
                             metadata = Metadata.manualEntry(clientRecordId = "karoo_hr_${ride.id.value}"),
                         ),
+                        "heart rate",
                     )
                 }
         }
@@ -116,7 +138,7 @@ class AndroidHealthConnectGateway(
                 .filter { (timestamp) -> (timestamp in (ride.startTime..ride.endTime)) }
                 .takeIf { it.isNotEmpty() }
                 ?.let { samples ->
-                    records.add(
+                    insertMetricSafe(
                         PowerRecord(
                             startTime = ride.startTime,
                             startZoneOffset = ride.zoneOffset,
@@ -127,6 +149,7 @@ class AndroidHealthConnectGateway(
                             },
                             metadata = Metadata.manualEntry(clientRecordId = "karoo_pwr_${ride.id.value}"),
                         ),
+                        "power",
                     )
                 }
         }
@@ -136,7 +159,7 @@ class AndroidHealthConnectGateway(
                 .filter { (timestamp) -> (timestamp in (ride.startTime..ride.endTime)) }
                 .takeIf { it.isNotEmpty() }
                 ?.let { samples ->
-                    records.add(
+                    insertMetricSafe(
                         CyclingPedalingCadenceRecord(
                             startTime = ride.startTime,
                             startZoneOffset = ride.zoneOffset,
@@ -147,6 +170,7 @@ class AndroidHealthConnectGateway(
                             },
                             metadata = Metadata.manualEntry(clientRecordId = "karoo_cad_${ride.id.value}"),
                         ),
+                        "cadence",
                     )
                 }
         }
@@ -156,7 +180,7 @@ class AndroidHealthConnectGateway(
                 .filter { (timestamp) -> (timestamp in (ride.startTime..ride.endTime)) }
                 .takeIf { it.isNotEmpty() }
                 ?.let { samples ->
-                    records.add(
+                    insertMetricSafe(
                         SpeedRecord(
                             startTime = ride.startTime,
                             startZoneOffset = ride.zoneOffset,
@@ -167,11 +191,18 @@ class AndroidHealthConnectGateway(
                             },
                             metadata = Metadata.manualEntry(clientRecordId = "karoo_spd_${ride.id.value}"),
                         ),
+                        "speed",
                     )
                 }
         }
+    }
 
-        healthConnectClient.insertRecords(records)
+    private suspend fun insertMetricSafe(record: Record, metricName: String) {
+        runCatching {
+            healthConnectClient.insertRecords(listOf(record))
+        }.onFailure { error ->
+            Log.w(TAG, "Failed to insert $metricName record: ${error.message}")
+        }
     }
 
     private fun createExerciseRoute(ride: Ride): ExerciseRoute? {
@@ -195,5 +226,9 @@ class AndroidHealthConnectGateway(
         }
 
         return ExerciseRoute(route = distinctPoints)
+    }
+
+    companion object {
+        private const val TAG = "HealthConnectGateway"
     }
 }

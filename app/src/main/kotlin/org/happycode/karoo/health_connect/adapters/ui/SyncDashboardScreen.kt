@@ -42,6 +42,7 @@ fun SyncDashboardScreen(
     onUpdatePreferences: (SyncPreferences) -> Unit,
     onRequestHealthPermissions: () -> Unit,
     onSyncNow: () -> Unit,
+    onResetSync: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -91,6 +92,7 @@ fun SyncDashboardScreen(
                 statusMessage = uiState.statusMessage,
                 errorMessage = uiState.errorMessage,
                 onSyncNow = onSyncNow,
+                onResetSync = onResetSync,
             )
         }
     }
@@ -231,6 +233,7 @@ private fun SyncActionCard(
     statusMessage: String?,
     errorMessage: String?,
     onSyncNow: () -> Unit,
+    onResetSync: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -257,6 +260,16 @@ private fun SyncActionCard(
                 } else {
                     Text("Sync Now")
                 }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedButton(
+                onClick = onResetSync,
+                enabled = !isSyncing,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Reset History & Re-sync All")
             }
 
             statusMessage?.let {

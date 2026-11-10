@@ -10,4 +10,5 @@ interface SyncPreferencesRepository {
     fun getLastSyncTimestamp(): Instant?
     fun markRideSynced(rideId: RideId, timestamp: Instant)
     fun isRideSynced(rideId: RideId): Boolean
+    fun clearSyncHistory()
 }

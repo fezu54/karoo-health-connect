@@ -170,6 +170,41 @@ class SramRideSourceAdapterTest : FreeSpec() {
             rides[1].title shouldBe "Evening Commute"
         }
 
+        "should map startedAt ISO string when activity contains startedAt field" {
+            //given
+            tokenStorage.saveToken(OAuthToken(accessToken = "mock_bearer_token"))
+            requestHandler = { request ->
+                val jsonBody = """
+                    {
+                        "data": [
+                            {
+                                "id": "act-started-at",
+                                "name": "Morning Hammerhead Ride",
+                                "startedAt": "2026-11-09T09:30:00Z"
+                            }
+                        ]
+                    }
+                """.trimIndent()
+
+                Response.Builder()
+                    .request(request)
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(200)
+                    .message("OK")
+                    .body(jsonBody.toResponseBody("application/json".toMediaType()))
+                    .build()
+            }
+
+            //when
+            val rides = adapter.fetchUnsyncedRides(Instant.EPOCH)
+
+            //then
+            rides.size shouldBe 1
+            rides[0].id shouldBe RideId("act-started-at")
+            rides[0].title shouldBe "Morning Hammerhead Ride"
+            rides[0].startTime shouldBe Instant.parse("2026-11-09T09:30:00Z")
+        }
+
         "should retry request with refreshed token when API returns 401 Unauthorized" {
             //given
             tokenStorage.saveToken(

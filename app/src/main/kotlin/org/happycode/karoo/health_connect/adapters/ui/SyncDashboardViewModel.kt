@@ -99,14 +99,17 @@ class SyncDashboardViewModel(
             Log.d("KarooAuth", "Exchanging authorization code...")
             val success = rideSourceGateway.exchangeAuthorizationCode(code, verifier)
             Log.d("KarooAuth", "Exchange authorization code result: $success")
-            _uiState.update { current ->
-                if (success) {
+            if (success) {
+                _uiState.update { current ->
                     current.copy(
                         isAuthenticated = true,
                         isSyncing = false,
                         statusMessage = "Connected to SRAM ID successfully",
                     )
-                } else {
+                }
+                syncNow()
+            } else {
+                _uiState.update { current ->
                     current.copy(
                         isAuthenticated = false,
                         isSyncing = false,
@@ -167,5 +170,11 @@ class SyncDashboardViewModel(
                 }
             }
         }
+    }
+
+    fun resetSyncHistoryAndSync() {
+        preferencesRepository.clearSyncHistory()
+        _uiState.update { it.copy(lastSyncTimestamp = null) }
+        syncNow()
     }
 }

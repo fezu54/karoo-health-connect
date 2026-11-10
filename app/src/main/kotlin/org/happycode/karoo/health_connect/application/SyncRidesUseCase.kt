@@ -30,7 +30,7 @@ class SyncRidesUseCase(
 
         var syncedCount = 0
 
-        for ((id, _, startTime) in summaries) {
+        for ((id, _, startTime) in summaries.sortedBy { it.startTime }) {
             if (preferencesRepository.isRideSynced(id)) {
                 continue
             }
