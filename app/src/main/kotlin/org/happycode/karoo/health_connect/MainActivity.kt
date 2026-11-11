@@ -66,6 +66,7 @@ class MainActivity : ComponentActivity() {
                     onUpdatePreferences = viewModel::updatePreferences,
                     onRequestHealthPermissions = ::requestHealthPermissions,
                     onSyncNow = viewModel::syncNow,
+                    onResetSync = viewModel::resetSyncHistoryAndSync,
                 )
             }
         }

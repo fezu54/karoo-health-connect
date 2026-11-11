@@ -49,6 +49,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
             every { tokenStorage.getToken() } returns null
             every { preferencesRepository.getPreferences() } returns SyncPreferences()
             every { preferencesRepository.getLastSyncTimestamp() } returns null
+            coEvery { syncRidesUseCase.execute() } returns SyncResult.Success(syncedCount = 0)
 
             val viewModel = SyncDashboardViewModel(
                 rideSourceGateway = rideSourceGateway,
@@ -85,12 +86,13 @@ class SyncDashboardViewModelTest : FreeSpec() {
             viewModel.pendingCodeVerifier shouldNotBe null
         }
 
-        "should exchange authorization code and update state to authenticated on handleAuthCallback" {
+        "should exchange authorization code and update state and trigger sync on handleAuthCallback" {
             //given
             val viewModel = createViewModel()
             viewModel.pendingAuthState = "expected_state"
             viewModel.pendingCodeVerifier = "expected_verifier"
             coEvery { rideSourceGateway.exchangeAuthorizationCode("auth_code_123", "expected_verifier") } returns true
+            coEvery { syncRidesUseCase.execute() } returns SyncResult.Success(syncedCount = 1)
 
             //when
             viewModel.handleAuthCallback(code = "auth_code_123", state = "expected_state")
@@ -98,7 +100,8 @@ class SyncDashboardViewModelTest : FreeSpec() {
 
             //then
             viewModel.uiState.value.isAuthenticated shouldBe true
-            viewModel.uiState.value.statusMessage shouldBe "Connected to SRAM ID successfully"
+            coVerify(atLeast = 1) { syncRidesUseCase.execute() }
+            viewModel.uiState.value.statusMessage shouldBe "Synced 1 ride(s) successfully"
             viewModel.uiState.value.errorMessage shouldBe null
         }
 
@@ -198,6 +201,21 @@ class SyncDashboardViewModelTest : FreeSpec() {
             //then
             viewModel.uiState.value.isSyncing shouldBe false
             viewModel.uiState.value.errorMessage shouldBe "Network error: Timeout"
+        }
+
+        "should clear sync history and trigger syncNow when resetSyncHistoryAndSync called" {
+            //given
+            val viewModel = createViewModel()
+            coEvery { syncRidesUseCase.execute() } returns SyncResult.Success(syncedCount = 2)
+
+            //when
+            viewModel.resetSyncHistoryAndSync()
+            testDispatcher.scheduler.advanceUntilIdle()
+
+            //then
+            coVerify(exactly = 1) { preferencesRepository.clearSyncHistory() }
+            coVerify(atLeast = 1) { syncRidesUseCase.execute() }
+            viewModel.uiState.value.statusMessage shouldBe "Synced 2 ride(s) successfully"
         }
     }
 }

@@ -142,5 +142,46 @@ class SyncRidesUseCaseTest : FreeSpec() {
         //then
         result shouldBe SyncResult.Failure(SyncError.ParseError("Invalid FIT header"))
     }
+
+    "should process rides in chronological order ascending when summaries returned out of order" {
+        //given
+        val olderTime = Instant.parse("2026-11-08T08:00:00Z")
+        val newerTime = Instant.parse("2026-11-09T08:00:00Z")
+        val olderSummary = RideSummary(RideId("ride-old"), "Old Ride", olderTime)
+        val newerSummary = RideSummary(RideId("ride-new"), "New Ride", newerTime)
+
+        val processedOrder = mutableListOf<String>()
+
+        coEvery { healthConnectGateway.isAvailable() } returns true
+        coEvery { preferencesRepository.getPreferences() } returns SyncPreferences()
+        coEvery { preferencesRepository.getLastSyncTimestamp() } returns Instant.EPOCH
+        coEvery { rideSourceGateway.fetchUnsyncedRides(any()) } returns listOf(newerSummary, olderSummary)
+        coEvery { preferencesRepository.isRideSynced(any()) } returns false
+        coEvery { rideSourceGateway.fetchRawFitStream(any()) } answers { ByteArrayInputStream(byteArrayOf(1)) }
+        coEvery { fitParser.parse(any()) } answers {
+            Ride(
+                id = RideId("mock"),
+                title = "Mock",
+                startTime = Instant.EPOCH,
+                endTime = Instant.EPOCH,
+                zoneOffset = ZoneOffset.UTC,
+                metrics = RideMetrics(),
+            )
+        }
+        coEvery { healthConnectGateway.upsertRide(any(), any()) } just Runs
+        coEvery { preferencesRepository.markRideSynced(RideId("ride-old"), olderTime) } answers {
+            processedOrder.add("ride-old")
+        }
+        coEvery { preferencesRepository.markRideSynced(RideId("ride-new"), newerTime) } answers {
+            processedOrder.add("ride-new")
+        }
+
+        //when
+        val result = useCase.execute()
+
+        //then
+        result shouldBe SyncResult.Success(syncedCount = 2)
+        processedOrder shouldBe listOf("ride-old", "ride-new")
+    }
 }
 }

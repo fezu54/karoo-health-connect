@@ -55,6 +55,13 @@ class SharedPreferencesSyncRepository(
     override fun isRideSynced(rideId: RideId): Boolean =
         preferences.getStringSet(KEY_SYNCED_RIDE_IDS, emptySet())?.contains(rideId.value) == true
 
+    override fun clearSyncHistory() {
+        preferences.edit {
+            remove(KEY_SYNCED_RIDE_IDS)
+            remove(KEY_LAST_SYNC_EPOCH_MS)
+        }
+    }
+
     companion object {
         private const val KEY_LAST_SYNC_EPOCH_MS = "pref_last_sync_epoch_ms"
         private const val KEY_SYNCED_RIDE_IDS = "pref_synced_ride_ids"

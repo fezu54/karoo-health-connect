@@ -210,8 +210,9 @@ class SramRideSourceAdapter(
 
         return activities.mapNotNull { item ->
             val startTime = when {
-                item.createdAt != null -> runCatching { Instant.parse(item.createdAt) }.getOrNull()
+                item.startedAt != null -> runCatching { Instant.parse(item.startedAt) }.getOrNull()
                 item.startTime != null -> runCatching { Instant.parse(item.startTime) }.getOrNull()
+                item.createdAt != null -> runCatching { Instant.parse(item.createdAt) }.getOrNull()
                 item.startTimestamp != null -> Instant.ofEpochMilli(item.startTimestamp)
                 else -> null
             } ?: Instant.now()
@@ -276,6 +277,7 @@ class SramRideSourceAdapter(
         val name: String? = null,
         val title: String? = null,
         val createdAt: String? = null,
+        val startedAt: String? = null,
         val startTime: String? = null,
         val startTimestamp: Long? = null,
     )
