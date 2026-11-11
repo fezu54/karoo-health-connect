@@ -1,0 +1,206 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check_commit.outputs.should_release }}
+      new_tag: ${{ steps.check_commit.outputs.new_tag }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Android SDK setup
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+
+      - name: Run unit tests
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./gradlew :app:test
+
+      - name: Build debug APK
+        if: github.ref != 'refs/heads/main'
+        run: |
+          ./gradlew :app:assembleDebug
+
+      - name: Check commit message for release criteria
+        if: github.ref == 'refs/heads/main'
+        id: check_commit
+        run: |
+          commit_subject=$(git log -1 --pretty=%s $GITHUB_SHA)
+          commit_body=$(git log -1 --pretty=%b $GITHUB_SHA)
+          echo "Commit subject: $commit_subject"
+
+          is_breaking=false
+          if echo "$commit_subject" | grep -qE '^(feat|fix|refactor)(\(.*\))?!:|\[BREAKING\]' || echo "$commit_body" | grep -qE '^BREAKING[- ]CHANGE:'; then
+            is_breaking=true
+          fi
+
+          if [ "$is_breaking" = true ] || echo "$commit_subject" | grep -qE '^(feat|fix|refactor)(\(.*\))?:'; then
+            echo "should_release=true" >> $GITHUB_ENV
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "Matches release criteria."
+
+            git fetch --tags origin
+            prev_tag=$(git describe --tags --abbrev=0 --match "v*" 2>/dev/null || echo "v0.0.0")
+            echo "prev_tag=$prev_tag" >> $GITHUB_ENV
+            echo "prev_tag=$prev_tag" >> "$GITHUB_OUTPUT"
+
+            version=${prev_tag#v}
+            version=${version%%-*}
+            version=${version%%+*}
+
+            IFS='.' read -r major minor patch <<< "$version" || true
+
+            major=$(echo "$major" | grep -oE '^[0-9]+' || echo "0")
+            minor=$(echo "$minor" | grep -oE '^[0-9]+' || echo "0")
+            patch=$(echo "$patch" | grep -oE '^[0-9]+' || echo "0")
+
+            major=$((10#$major))
+            minor=$((10#$minor))
+            patch=$((10#$patch))
+
+            if [ "$is_breaking" = true ]; then
+              major=$((major + 1))
+              minor=0
+              patch=0
+            elif echo "$commit_subject" | grep -qE '^(feat|refactor)(\(.*\))?:'; then
+              minor=$((minor + 1))
+              patch=0
+            elif echo "$commit_subject" | grep -qE '^fix(\(.*\))?:'; then
+              patch=$((patch + 1))
+            fi
+
+            new_tag="v$major.$minor.$patch"
+            echo "new_tag=$new_tag" >> $GITHUB_ENV
+            echo "new_tag=$new_tag" >> "$GITHUB_OUTPUT"
+            echo "New version: $new_tag"
+          else
+            echo "should_release=false" >> $GITHUB_ENV
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "Does not match release criteria."
+          fi
+
+      - name: Decode Keystore
+        if: github.ref == 'refs/heads/main' && env.should_release == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          mkdir -p ~/.keystore
+          echo "$KEYSTORE_BASE64" | base64 -d > ~/.keystore/karoo-health-connect.jks
+
+      - name: Build productive release APK and AAB
+        if: github.ref == 'refs/heads/main' && env.should_release == 'true'
+        env:
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew :app:assembleRelease :app:bundleRelease -PversionName=${{ env.new_tag }} -PversionCode=${{ github.run_number }}
+
+      - name: Generate Release Notes
+        if: github.ref == 'refs/heads/main' && env.should_release == 'true'
+        run: |
+          kotlinc -script .github/scripts/generate_release_notes.kts
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' && env.should_release == 'true'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ env.new_tag }}
+          target_commitish: ${{ github.sha }}
+          name: Release ${{ env.new_tag }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            app/build/outputs/apk/release/app-release.apk
+            app/build/outputs/bundle/release/app-release.aab
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release AAB Artifact
+        if: github.ref == 'refs/heads/main' && env.should_release == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-release-aab
+          path: app/build/outputs/bundle/release/app-release.aab
+          retention-days: 7
+
+      - name: Upload Release Notes Artifact
+        if: github.ref == 'refs/heads/main' && env.should_release == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-notes
+          path: release_notes.md
+          retention-days: 7
+
+  publish-google-play:
+    name: Publish to Google Play
+    needs: [build-test]
+    if: github.ref == 'refs/heads/main' && needs.build-test.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: Google Play
+    steps:
+      - name: Download Release AAB
+        uses: actions/download-artifact@v8
+        with:
+          name: app-release-aab
+          path: app/build/outputs/bundle/release
+
+      - name: Download Release Notes
+        uses: actions/download-artifact@v8
+        with:
+          name: release-notes
+          path: .
+
+      - name: Prepare Play Store Release Notes
+        run: |
+          mkdir -p distribution/whatsnew
+          if [ -f release_notes.md ]; then
+            grep -E '^\* \*\*' release_notes.md | sed 's/\* \*\*//g' | sed 's/\*\*$//g' | sed 's/^/- /' | head -c 500 > distribution/whatsnew/whatsnew-en-US
+            if [ ! -s distribution/whatsnew/whatsnew-en-US ]; then
+              head -c 500 release_notes.md > distribution/whatsnew/whatsnew-en-US
+            fi
+          fi
+
+      - name: Publish to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY || secrets.SERVICE_ACCOUNT_JSON }}
+          packageName: org.happycode.karoo.health_connect
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: ${{ vars.PLAY_STORE_TRACK || 'internal' }}
+          status: completed
+          whatsNewDirectory: distribution/whatsnew

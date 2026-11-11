@@ -61,3 +61,8 @@ Thumbs.db
 # NDK / CMake
 .externalNativeBuild/
 .cxx/
+
+# Generated release files
+release_notes.md
+distribution/
+
