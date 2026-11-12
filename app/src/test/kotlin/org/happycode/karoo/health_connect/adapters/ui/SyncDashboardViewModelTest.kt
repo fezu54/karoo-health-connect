@@ -14,6 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.happycode.karoo.health_connect.R
 import org.happycode.karoo.health_connect.adapters.sram.TokenStorage
 import org.happycode.karoo.health_connect.application.SyncRidesUseCase
 import org.happycode.karoo.health_connect.domain.gateway.HealthConnectGateway
@@ -101,7 +102,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
             //then
             viewModel.uiState.value.isAuthenticated shouldBe true
             coVerify(atLeast = 1) { syncRidesUseCase.execute() }
-            viewModel.uiState.value.statusMessage shouldBe "Synced 1 ride(s) successfully"
+            viewModel.uiState.value.statusMessage shouldBe UiText.StringResource(R.string.status_synced_rides, 1)
             viewModel.uiState.value.errorMessage shouldBe null
         }
 
@@ -117,7 +118,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
 
             //then
             viewModel.uiState.value.isAuthenticated shouldBe false
-            viewModel.uiState.value.errorMessage shouldBe "OAuth state mismatch. Authentication aborted."
+            viewModel.uiState.value.errorMessage shouldBe UiText.StringResource(R.string.error_oauth_state_mismatch)
         }
 
         "should update state to error when code exchange fails on handleAuthCallback" {
@@ -133,7 +134,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
 
             //then
             viewModel.uiState.value.isAuthenticated shouldBe false
-            viewModel.uiState.value.errorMessage shouldBe "Failed to authenticate with SRAM ID"
+            viewModel.uiState.value.errorMessage shouldBe UiText.StringResource(R.string.error_sram_auth_failed)
         }
 
         "should update error message when handleAuthError called" {
@@ -145,7 +146,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
 
             //then
             viewModel.uiState.value.isAuthenticated shouldBe false
-            viewModel.uiState.value.errorMessage shouldBe "SRAM authentication failed: access_denied"
+            viewModel.uiState.value.errorMessage shouldBe UiText.StringResource(R.string.error_sram_auth_failed_with_reason, "access_denied")
         }
 
         "should clear token and update state when disconnect called" {
@@ -158,6 +159,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
             //then
             coVerify(exactly = 1) { tokenStorage.clearToken() }
             viewModel.uiState.value.isAuthenticated shouldBe false
+            viewModel.uiState.value.statusMessage shouldBe UiText.StringResource(R.string.status_disconnected_sram)
         }
 
         "should update state and persist preferences when updatePreferences called" {
@@ -185,7 +187,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
 
             //then
             viewModel.uiState.value.isSyncing shouldBe false
-            viewModel.uiState.value.statusMessage shouldBe "Synced 3 ride(s) successfully"
+            viewModel.uiState.value.statusMessage shouldBe UiText.StringResource(R.string.status_synced_rides, 3)
             viewModel.uiState.value.errorMessage shouldBe null
         }
 
@@ -200,7 +202,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
 
             //then
             viewModel.uiState.value.isSyncing shouldBe false
-            viewModel.uiState.value.errorMessage shouldBe "Network error: Timeout"
+            viewModel.uiState.value.errorMessage shouldBe UiText.StringResource(R.string.error_network, "Timeout")
         }
 
         "should clear sync history and trigger syncNow when resetSyncHistoryAndSync called" {
@@ -215,7 +217,7 @@ class SyncDashboardViewModelTest : FreeSpec() {
             //then
             coVerify(exactly = 1) { preferencesRepository.clearSyncHistory() }
             coVerify(atLeast = 1) { syncRidesUseCase.execute() }
-            viewModel.uiState.value.statusMessage shouldBe "Synced 2 ride(s) successfully"
+            viewModel.uiState.value.statusMessage shouldBe UiText.StringResource(R.string.status_synced_rides, 2)
         }
     }
 }

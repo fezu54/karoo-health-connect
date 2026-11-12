@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">Karoo Health Connect</string>
+
+    <!-- SRAM Account Card -->
+    <string name="sram_account_title">SRAM / Hammerhead-Konto</string>
+    <string name="sram_connected">Mit SRAM-ID verbunden</string>
+    <string name="disconnect">Trennen</string>
+    <string name="sram_sign_in_description">Melden Sie sich mit Ihrer SRAM-ID über den sicheren OpenID Connect / OAuth-Ablauf an.</string>
+    <string name="connect_sram_account">SRAM-Konto verbinden</string>
+
+    <!-- Health Connect Card -->
+    <string name="health_connect_title">Google Health Connect</string>
+    <string name="health_connect_available">Health Connect ist installiert und verfügbar.</string>
+    <string name="health_connect_not_available">Health Connect ist auf diesem Gerät nicht verfügbar.</string>
+    <string name="check_grant_permissions">Berechtigungen prüfen / erteilen</string>
+
+    <!-- Metrics to Sync Card -->
+    <string name="metrics_to_sync_title">Zu synchronisierende Metriken</string>
+    <string name="metric_heart_rate">Herzfrequenz</string>
+    <string name="metric_power">Leistung</string>
+    <string name="metric_cadence">Trittfrequenz</string>
+    <string name="metric_speed">Geschwindigkeit</string>
+    <string name="metric_calories">Kalorien</string>
+    <string name="metric_elevation_gain">Höhengewinn</string>
+    <string name="metric_gps_route">GPS-Trainingsroute</string>
+
+    <!-- Sync Actions Card -->
+    <string name="sync_activities_title">Aktivitäten synchronisieren</string>
+    <string name="last_synced">Zuletzt synchronisiert: %1$s</string>
+    <string name="never">Nie</string>
+    <string name="sync_now">Jetzt synchronisieren</string>
+    <string name="reset_sync_history">Verlauf zurücksetzen &amp; alles neu synchronisieren</string>
+
+    <!-- Status Messages -->
+    <string name="status_sram_connected">Erfolgreich mit SRAM-ID verbunden</string>
+    <string name="status_disconnected_sram">Von SRAM getrennt</string>
+    <string name="status_synced_rides">%1$d Fahrt(en) erfolgreich synchronisiert</string>
+
+    <!-- Error Messages -->
+    <string name="error_oauth_state_mismatch">OAuth-Status stimmt nicht überein. Authentifizierung abgebrochen.</string>
+    <string name="error_sram_auth_failed">Authentifizierung mit SRAM-ID fehlgeschlagen</string>
+    <string name="error_sram_auth_failed_with_reason">SRAM-Authentifizierung fehlgeschlagen: %1$s</string>
+    <string name="error_auth_failed_relogin">Authentifizierung fehlgeschlagen. Bitte erneut anmelden.</string>
+    <string name="error_network">Netzwerkfehler: %1$s</string>
+    <string name="error_process_ride">Fehler beim Verarbeiten der Fahrt: %1$s</string>
+</resources>

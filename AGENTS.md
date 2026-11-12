@@ -38,6 +38,7 @@ Enforce concentric rings with strict inward dependency rules (inner rings have z
 - **Naming & Comments**:
   - Use clear, self-explanatory names (PascalCase for types, camelCase for functions and variables).
   - Avoid comments that explain what code does; rename or extract to well-named functions instead. Use data classes for DTOs and value objects.
+- **Localization**: Never hardcode user-facing strings in UI components or ViewModels. Always define strings in `res/values/strings.xml` and always provide corresponding German translations in `res/values-de/strings.xml`. Any future string changes or additions must always include German translations.
 
 ---
 
@@ -113,3 +114,4 @@ class SyncRidesUseCaseTest : FreeSpec({
 - Always include or update tests alongside production code changes.
 - Never add `TODO` comments in lieu of implementation. If follow-up work is required, note it for issue tracking.
 - If a change introduces a new dependency or affects architecture, explicitly state which ring it belongs to and why.
+- String changes or additions must always include German translations in `res/values-de/strings.xml`.

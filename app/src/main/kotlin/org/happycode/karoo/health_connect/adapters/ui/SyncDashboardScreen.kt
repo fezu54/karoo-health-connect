@@ -26,11 +26,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import org.happycode.karoo.health_connect.R
 import org.happycode.karoo.health_connect.domain.model.SyncPreferences
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +50,7 @@ fun SyncDashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Karoo Health Connect", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.app_name), fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -111,21 +113,21 @@ private fun SramConnectionCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "SRAM / Hammerhead Account",
+                text = stringResource(R.string.sram_account_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
             )
             Spacer(modifier = Modifier.height(8.dp))
 
             if (isAuthenticated) {
-                Text("Connected with SRAM ID", color = MaterialTheme.colorScheme.primary)
+                Text(stringResource(R.string.sram_connected), color = MaterialTheme.colorScheme.primary)
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedButton(onClick = onDisconnect) {
-                    Text("Disconnect")
+                    Text(stringResource(R.string.disconnect))
                 }
             } else {
                 Text(
-                    text = "Sign in using your SRAM ID via the secure OpenID Connect / OAuth flow.",
+                    text = stringResource(R.string.sram_sign_in_description),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -134,7 +136,7 @@ private fun SramConnectionCard(
                     enabled = !isSyncing,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Connect SRAM Account")
+                    Text(stringResource(R.string.connect_sram_account))
                 }
             }
         }
@@ -151,19 +153,19 @@ private fun HealthConnectStatusCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Google Health Connect", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.health_connect_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
 
             val statusText = when {
-                isAvailable -> "Health Connect is installed and available."
-                else -> "Health Connect is not available on this device."
+                isAvailable -> stringResource(R.string.health_connect_available)
+                else -> stringResource(R.string.health_connect_not_available)
             }
             Text(statusText, style = MaterialTheme.typography.bodyMedium)
 
             if (isAvailable) {
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedButton(onClick = onRequestPermissions) {
-                    Text("Check / Grant Permissions")
+                    Text(stringResource(R.string.check_grant_permissions))
                 }
             }
         }
@@ -180,28 +182,28 @@ private fun SyncMetricsCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Metrics to Sync", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.metrics_to_sync_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
 
-            PreferenceToggle("Heart Rate", preferences.syncHeartRate) {
+            PreferenceToggle(stringResource(R.string.metric_heart_rate), preferences.syncHeartRate) {
                 onUpdatePreferences(preferences.copy(syncHeartRate = it))
             }
-            PreferenceToggle("Power", preferences.syncPower) {
+            PreferenceToggle(stringResource(R.string.metric_power), preferences.syncPower) {
                 onUpdatePreferences(preferences.copy(syncPower = it))
             }
-            PreferenceToggle("Cadence", preferences.syncCadence) {
+            PreferenceToggle(stringResource(R.string.metric_cadence), preferences.syncCadence) {
                 onUpdatePreferences(preferences.copy(syncCadence = it))
             }
-            PreferenceToggle("Speed", preferences.syncSpeed) {
+            PreferenceToggle(stringResource(R.string.metric_speed), preferences.syncSpeed) {
                 onUpdatePreferences(preferences.copy(syncSpeed = it))
             }
-            PreferenceToggle("Calories", preferences.syncCalories) {
+            PreferenceToggle(stringResource(R.string.metric_calories), preferences.syncCalories) {
                 onUpdatePreferences(preferences.copy(syncCalories = it))
             }
-            PreferenceToggle("Elevation Gain", preferences.syncElevation) {
+            PreferenceToggle(stringResource(R.string.metric_elevation_gain), preferences.syncElevation) {
                 onUpdatePreferences(preferences.copy(syncElevation = it))
             }
-            PreferenceToggle("GPS Exercise Route", preferences.syncRoute) {
+            PreferenceToggle(stringResource(R.string.metric_gps_route), preferences.syncRoute) {
                 onUpdatePreferences(preferences.copy(syncRoute = it))
             }
         }
@@ -230,8 +232,8 @@ private fun PreferenceToggle(
 private fun SyncActionCard(
     isSyncing: Boolean,
     lastSyncTimestamp: String?,
-    statusMessage: String?,
-    errorMessage: String?,
+    statusMessage: UiText?,
+    errorMessage: UiText?,
     onSyncNow: () -> Unit,
     onResetSync: () -> Unit,
 ) {
@@ -240,10 +242,11 @@ private fun SyncActionCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text("Sync Activities", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.sync_activities_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text("Last synced: ${lastSyncTimestamp ?: "Never"}", style = MaterialTheme.typography.bodyMedium)
+            val lastSyncedText = lastSyncTimestamp ?: stringResource(R.string.never)
+            Text(stringResource(R.string.last_synced, lastSyncedText), style = MaterialTheme.typography.bodyMedium)
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
@@ -258,7 +261,7 @@ private fun SyncActionCard(
                         strokeWidth = 2.dp,
                     )
                 } else {
-                    Text("Sync Now")
+                    Text(stringResource(R.string.sync_now))
                 }
             }
 
@@ -269,17 +272,17 @@ private fun SyncActionCard(
                 enabled = !isSyncing,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Reset History & Re-sync All")
+                Text(stringResource(R.string.reset_sync_history))
             }
 
             statusMessage?.let {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(it, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium)
+                Text(it.asString(), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium)
             }
 
             errorMessage?.let {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
+                Text(it.asString(), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
