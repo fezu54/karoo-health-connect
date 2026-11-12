@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.happycode.karoo.health_connect.R
 import org.happycode.karoo.health_connect.adapters.sram.PkceGenerator
 import org.happycode.karoo.health_connect.adapters.sram.TokenStorage
 import org.happycode.karoo.health_connect.application.SyncRidesUseCase
@@ -26,8 +27,8 @@ data class SyncDashboardUiState(
     val isSyncing: Boolean = false,
     val preferences: SyncPreferences = SyncPreferences(),
     val lastSyncTimestamp: Instant? = null,
-    val statusMessage: String? = null,
-    val errorMessage: String? = null,
+    val statusMessage: UiText? = null,
+    val errorMessage: UiText? = null,
 )
 
 class SyncDashboardViewModel(
@@ -90,7 +91,7 @@ class SyncDashboardViewModel(
                 _uiState.update {
                     it.copy(
                         isSyncing = false,
-                        errorMessage = "OAuth state mismatch. Authentication aborted.",
+                        errorMessage = UiText.StringResource(R.string.error_oauth_state_mismatch),
                     )
                 }
                 return@launch
@@ -104,7 +105,7 @@ class SyncDashboardViewModel(
                     current.copy(
                         isAuthenticated = true,
                         isSyncing = false,
-                        statusMessage = "Connected to SRAM ID successfully",
+                        statusMessage = UiText.StringResource(R.string.status_sram_connected),
                     )
                 }
                 syncNow()
@@ -113,7 +114,7 @@ class SyncDashboardViewModel(
                     current.copy(
                         isAuthenticated = false,
                         isSyncing = false,
-                        errorMessage = "Failed to authenticate with SRAM ID",
+                        errorMessage = UiText.StringResource(R.string.error_sram_auth_failed),
                     )
                 }
             }
@@ -126,14 +127,14 @@ class SyncDashboardViewModel(
         _uiState.update {
             it.copy(
                 isSyncing = false,
-                errorMessage = "SRAM authentication failed: $error",
+                errorMessage = UiText.StringResource(R.string.error_sram_auth_failed_with_reason, error),
             )
         }
     }
 
     fun disconnect() {
         tokenStorage.clearToken()
-        _uiState.update { it.copy(isAuthenticated = false, statusMessage = "Disconnected from SRAM") }
+        _uiState.update { it.copy(isAuthenticated = false, statusMessage = UiText.StringResource(R.string.status_disconnected_sram)) }
     }
 
     fun updatePreferences(newPreferences: SyncPreferences) {
@@ -150,16 +151,16 @@ class SyncDashboardViewModel(
                         current.copy(
                             isSyncing = false,
                             lastSyncTimestamp = preferencesRepository.getLastSyncTimestamp(),
-                            statusMessage = "Synced ${result.syncedCount} ride(s) successfully",
+                            statusMessage = UiText.StringResource(R.string.status_synced_rides, result.syncedCount),
                         )
                     }
                 }
                 is SyncResult.Failure -> {
                     val message = when (val error = result.error) {
-                        is SyncError.AuthenticationFailed -> "Authentication failed. Please re-login."
-                        is SyncError.HealthConnectUnavailable -> "Health Connect is not available on this device."
-                        is SyncError.NetworkError -> "Network error: ${error.message}"
-                        is SyncError.ParseError -> "Failed to process ride: ${error.message}"
+                        is SyncError.AuthenticationFailed -> UiText.StringResource(R.string.error_auth_failed_relogin)
+                        is SyncError.HealthConnectUnavailable -> UiText.StringResource(R.string.health_connect_not_available)
+                        is SyncError.NetworkError -> UiText.StringResource(R.string.error_network, error.message)
+                        is SyncError.ParseError -> UiText.StringResource(R.string.error_process_ride, error.message)
                     }
                     _uiState.update { current ->
                         current.copy(

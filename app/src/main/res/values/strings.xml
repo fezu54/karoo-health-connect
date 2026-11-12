@@ -1,3 +1,46 @@
 <resources>
-    <string name="app_name">karoo-health-connect</string>
+    <string name="app_name">Karoo Health Connect</string>
+
+    <!-- SRAM Account Card -->
+    <string name="sram_account_title">SRAM / Hammerhead Account</string>
+    <string name="sram_connected">Connected with SRAM ID</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="sram_sign_in_description">Sign in using your SRAM ID via the secure OpenID Connect / OAuth flow.</string>
+    <string name="connect_sram_account">Connect SRAM Account</string>
+
+    <!-- Health Connect Card -->
+    <string name="health_connect_title">Google Health Connect</string>
+    <string name="health_connect_available">Health Connect is installed and available.</string>
+    <string name="health_connect_not_available">Health Connect is not available on this device.</string>
+    <string name="check_grant_permissions">Check / Grant Permissions</string>
+
+    <!-- Metrics to Sync Card -->
+    <string name="metrics_to_sync_title">Metrics to Sync</string>
+    <string name="metric_heart_rate">Heart Rate</string>
+    <string name="metric_power">Power</string>
+    <string name="metric_cadence">Cadence</string>
+    <string name="metric_speed">Speed</string>
+    <string name="metric_calories">Calories</string>
+    <string name="metric_elevation_gain">Elevation Gain</string>
+    <string name="metric_gps_route">GPS Exercise Route</string>
+
+    <!-- Sync Actions Card -->
+    <string name="sync_activities_title">Sync Activities</string>
+    <string name="last_synced">Last synced: %1$s</string>
+    <string name="never">Never</string>
+    <string name="sync_now">Sync Now</string>
+    <string name="reset_sync_history">Reset History &amp; Re-sync All</string>
+
+    <!-- Status Messages -->
+    <string name="status_sram_connected">Connected to SRAM ID successfully</string>
+    <string name="status_disconnected_sram">Disconnected from SRAM</string>
+    <string name="status_synced_rides">Synced %1$d ride(s) successfully</string>
+
+    <!-- Error Messages -->
+    <string name="error_oauth_state_mismatch">OAuth state mismatch. Authentication aborted.</string>
+    <string name="error_sram_auth_failed">Failed to authenticate with SRAM ID</string>
+    <string name="error_sram_auth_failed_with_reason">SRAM authentication failed: %1$s</string>
+    <string name="error_auth_failed_relogin">Authentication failed. Please re-login.</string>
+    <string name="error_network">Network error: %1$s</string>
+    <string name="error_process_ride">Failed to process ride: %1$s</string>
 </resources>
