@@ -125,6 +125,7 @@ jobs:
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          SRAM_TOKEN_PROXY_URL: ${{ secrets.SRAM_TOKEN_PROXY_URL || vars.SRAM_TOKEN_PROXY_URL }}
         run: |
           ./gradlew :app:assembleRelease :app:bundleRelease -PversionName=${{ env.new_tag }} -PversionCode=${{ github.run_number }}
 
