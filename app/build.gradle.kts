@@ -12,7 +12,9 @@ val localProperties = Properties().apply {
         localPropertiesFile.inputStream().use { load(it) }
     }
 }
-val sramTokenProxyUrl: String = localProperties.getProperty("sram.tokenProxyUrl", "")
+val sramTokenProxyUrl: String = (project.findProperty("sram.tokenProxyUrl") as? String)
+    ?: System.getenv("SRAM_TOKEN_PROXY_URL")?.takeIf { it.isNotBlank() }
+    ?: localProperties.getProperty("sram.tokenProxyUrl", "")
 
 android {
     namespace = "org.happycode.karoo.health_connect"
